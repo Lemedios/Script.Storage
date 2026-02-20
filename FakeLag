@@ -1,0 +1,69 @@
+local v1,v2,v3=game:service'RunService',game.Players.LocalPlayer,game:service'CoreGui'
+local v4,v5,v6,v7,v8,v9,v10,v11,v12=nil,false,nil,nil,nil,nil,0,CFrame.new(),Vector3.new(0,1),'v'
+local function v13(v14)
+	for _,v15 in ipairs(v14:GetChildren())do if v15.Name=='HumanoidRootPart'then v4=v15 break end end
+	v14.ChildAdded:Connect(function(v16)if v16.Name=='HumanoidRootPart'then v4=v16 end end)
+end
+if v2.Character then v13(v2.Character)end
+v2.CharacterAdded:Connect(v13)
+
+local v14=Instance.new('ScreenGui')
+v14.Parent=v3
+v14.DisplayOrder=2147483647
+local v15=Instance.new('Frame',v14)
+v15.AnchorPoint=Vector2.new(1,1)
+v15.Position=UDim2.new(1,-10,1,-10)
+v15.Size=UDim2.fromOffset(150,55)
+v15.BackgroundColor3=Color3.new(.15,.15,.15)
+v15.ZIndex=2147483647
+Instance.new('UICorner',v15).CornerRadius=UDim.new(0,10)
+local v16=Instance.new('UIStroke',v15)
+v16.Thickness=1
+v16.Color=Color3.new(1,1,1)
+
+local v17=Instance.new('TextButton',v15)
+v17.Size=UDim2.new(1,-10,1,-10)
+v17.Position=UDim2.fromOffset(5,5)
+v17.BackgroundColor3=Color3.new(.2,.2,.2)
+v17.AutoButtonColor=false
+v17.Font=Enum.Font.Code
+v17.TextColor3=Color3.new(1,1,1)
+v17.TextSize=22
+v17.Text='OFF'
+v17.ZIndex=2147483647
+Instance.new('UICorner',v17).CornerRadius=UDim.new(0,10)
+local v18=Instance.new('UIStroke',v17)
+v18.Thickness=1
+v18.Color=Color3.new(1,1,1)
+
+v17.MouseButton1Click:Connect(function()
+	v5=not v5
+	v17.Text=v5 and'ON'or'OFF'
+	v10=0
+	if not v5 and v6 then
+		local v19=v4
+		if v19 then v19.CFrame,v19.Velocity,v19.RotVelocity=v6,v7,v8 end
+		v6=nil
+	end
+end)
+
+v1.Heartbeat:Connect(function(v19)
+	if not v5 then return end
+	local v20=v4
+	if not v20 then v6=nil return end
+	v10=v10+v19
+	if v10>=.2 then v10=0 v11=v20.CFrame end
+	v6,v7,v8=v20.CFrame,v20.Velocity,v20.RotVelocity
+	v20.CFrame=v11
+	v20.Velocity=v12
+	v20.RotVelocity=Vector3.new()
+	v9=1
+end)
+
+v1:BindToRenderStep(v12,Enum.RenderPriority.Camera.Value-1,function()
+	if not v5 or not v6 or not v9 then return end
+	local v19=v4
+	if not v19 then v6=nil v9=nil return end
+	v19.CFrame,v19.Velocity,v19.RotVelocity=v6,v7,v8
+	v9=nil
+end)
