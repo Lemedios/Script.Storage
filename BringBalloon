@@ -1,0 +1,48 @@
+local v1,v2,v3=game.Players.LocalPlayer,game:service'RunService',Instance.new('ScreenGui')
+v3.Parent=v1.PlayerGui
+v3.DisplayOrder=2147483647
+local v4=Instance.new('TextButton',v3)
+v4.Size=UDim2.new(0,120,0,40)
+v4.Position=UDim2.new(1,0,.5)
+v4.AnchorPoint=Vector2.new(1,.5)
+v4.BackgroundColor3=Color3.new(.2,.2,.2)
+v4.BorderSizePixel=0
+v4.AutoButtonColor=false
+v4.Font=Enum.Font.Code
+v4.TextColor3=Color3.new(1,1,1)
+v4.TextSize=22
+v4.Text='Balloon'
+v4.TextStrokeTransparency=1
+Instance.new('UICorner',v4).CornerRadius=UDim.new(0,10)
+local v5=Instance.new('UIStroke',v4)
+v5.Thickness=1
+v5.Color=Color3.new(1,1,1)
+v5.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+v4.MouseButton1Click:Connect(function()
+	local v6,v7,v8=workspace.Items,game.ReplicatedStorage.RemoteEvents.RequestStartDraggingItem,game.ReplicatedStorage.RemoteEvents.StopDraggingItem
+	local v9=v1.Character
+	if not v9 then return end
+	local v10
+	for _,v11 in ipairs(v9:GetChildren()) do if v11.Name=='HumanoidRootPart' then v10=v11 break end end
+	if not v10 then return end
+	local v12=CFrame.new(v10.Position+Vector3.new(0,10))
+	for _,v13 in ipairs(v6:GetChildren()) do
+		if v13:IsA'Model' and v13.Name:lower():find('balloon') then
+			v7:FireServer(v13)
+			v2.RenderStepped:Wait()
+			v8:FireServer(v13)
+			local v14=v13.PrimaryPart
+			if not v14 then
+				local v15,v16=select(1,v13:GetBoundingBox()).p,1/0
+				for _,v17 in ipairs(v13:GetDescendants()) do
+					if v17:IsA'BasePart' then
+						local v18=(v17.Position-v15).Magnitude
+						if v18<v16 then v16,v14=v18,v17 end
+					end
+				end
+				v13.PrimaryPart=v14
+			end
+			if v14 then v13:SetPrimaryPartCFrame(v12*(v14.CFrame-v14.Position)) end
+		end
+	end
+end)
