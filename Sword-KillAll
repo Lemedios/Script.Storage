@@ -39,6 +39,45 @@ qW8cS.Transparency=.35
 qW8cS.Color=Color3.fromRGB(255,255,255)
 qW8cS.Parent=pD9hV
 
+local rQ1wE={'Team','Height','Both','None'}
+local sV2xK=4
+local tB3nM=Instance.new('Frame')
+tB3nM.Size=UDim2.new(0,150,0,46)
+tB3nM.Position=UDim2.new(0,12,1,-108)
+tB3nM.BackgroundTransparency=.35
+tB3nM.BorderSizePixel=0
+tB3nM.BackgroundColor3=Color3.fromRGB(0,0,0)
+tB3nM.Parent=mF9xC
+Instance.new('UICorner',tB3nM).CornerRadius=UDim.new(0,14)
+local uC4vP=Instance.new('UIStroke')
+uC4vP.Thickness=2
+uC4vP.Transparency=.25
+uC4vP.Color=Color3.fromRGB(255,255,255)
+uC4vP.Parent=tB3nM
+local vD5pS=Instance.new('TextButton')
+vD5pS.Size=UDim2.new(1,-10,1,-10)
+vD5pS.Position=UDim2.new(0,5,0,5)
+vD5pS.BackgroundTransparency=0
+vD5pS.BorderSizePixel=0
+vD5pS.BackgroundColor3=Color3.fromRGB(0,0,0)
+vD5pS.AutoButtonColor=false
+vD5pS.Font=Enum.Font.Code
+vD5pS.TextSize=20
+vD5pS.Text=rQ1wE[sV2xK]
+vD5pS.TextTransparency=.05
+vD5pS.TextColor3=Color3.fromRGB(255,255,255)
+vD5pS.Parent=tB3nM
+Instance.new('UICorner',vD5pS).CornerRadius=UDim.new(0,12)
+local wF6qT=Instance.new('UIStroke')
+wF6qT.Thickness=1
+wF6qT.Transparency=.35
+wF6qT.Color=Color3.fromRGB(255,255,255)
+wF6qT.Parent=vD5pS
+vD5pS.MouseButton1Click:Connect(function()
+	sV2xK=sV2xK%4+1
+	vD5pS.Text=rQ1wE[sV2xK]
+end)
+
 local function rP2vN(p)while p do if p.ClassName=='Accessory'then return 1 end p=p.Parent end end
 local function sV4kZ(c)for _,v in ipairs(c:GetChildren())do if v:IsA'Humanoid'then return v end end end
 local function tX7rW(c)for _,v in ipairs(c:GetChildren())do if v:IsA'ForceField'then return 1 end end end
@@ -59,7 +98,7 @@ local function xT7rW(p)
 	p.AncestryChanged:Connect(function(_,pp)
 		if not pp then
 			fY8kP[p]=nil
-			if eJ3sW[p]then for i=1,#eJ3sW[p]do local m,ppp,hd=eJ3sW[p][i][1],eJ3sW[p][i][2],eJ3sW[p][i][3] if m and m.Parent==nil then m.Parent=(ppp and ppp.Parent and ppp)or(hd and hd.Parent and hd)or nil end end eJ3sW[p]=nil end
+			if eJ3sW[p]and zQ3aS then zQ3aS(p)end
 			if kM8qT==p then kM8qT=nil lQ3wE=nil end
 		end
 	end)
@@ -76,11 +115,17 @@ local function yZ6aD(c,hd,t)
 	t=t or{[0]={}}
 	local s=t[0]
 	for _,m in ipairs(c:GetDescendants())do
-		if (m:IsA'Motor6D'or m:IsA'Weld'or m:IsA'WeldConstraint')and not s[m]then
+		local cn=m.ClassName
+		if (cn=='Motor6D'or cn=='Weld'or cn=='WeldConstraint')and not s[m]then
 			local p0,p1=m.Part0,m.Part1
 			local o=nil
 			if p0==hd then o=p1 elseif p1==hd then o=p0 end
-			if o and not rP2vN(o)then t[#t+1]={m,m.Parent,hd}s[m]=1 m.Parent=nil end
+			if o and not rP2vN(o)then
+				if cn=='Motor6D'then t[#t+1]={m,p0,p1,m.C0,m.C1,m.Enabled,cn}m.Enabled=false m.Part0=nil m.Part1=nil
+				elseif cn=='Weld'then t[#t+1]={m,p0,p1,m.C0,m.C1,cn}m.Part0=nil m.Part1=nil
+				else t[#t+1]={m,p0,p1,cn}m.Part0=nil m.Part1=nil end
+				s[m]=1
+			end
 		end
 	end
 	return t
@@ -89,8 +134,14 @@ zQ3aS=function(p)
 	local t=eJ3sW[p]
 	if not t then return end
 	for i=1,#t do
-		local m,pp,hd=t[i][1],t[i][2],t[i][3]
-		if m and m.Parent==nil then m.Parent=(pp and pp.Parent and pp)or(hd and hd.Parent and hd)or nil end
+		local e=t[i]
+		local m=e[1]
+		if m then
+			local cn=e[#e]
+			if cn=='Motor6D'then m.Part0=e[2]m.Part1=e[3]m.C0=e[4]m.C1=e[5]m.Enabled=e[6]
+			elseif cn=='Weld'then m.Part0=e[2]m.Part1=e[3]m.C0=e[4]m.C1=e[5]
+			elseif cn=='WeldConstraint'then m.Part0=e[2]m.Part1=e[3]end
+		end
 	end
 	eJ3sW[p]=nil
 end
@@ -108,36 +159,38 @@ if dV6nH.Character then wJ7nL()end
 local function A1b2C()
 	if not hN2mQ then return end
 	if not gR1cU or not gR1cU.Parent then wJ7nL()end
-	local L={}
+	local md=rQ1wE[sV2xK]
+	local L,mp,my={},nil,-1/0
 	for p,t0 in pairs(fY8kP)do
 		local c=p.Character
 		if c and os.clock()-t0>0.1 and not tX7rW(c)then
 			local h=sV4kZ(c)
 			if h and h.Health>0 then
-				local hd=uX5bC(c)
-				if hd and hd.Parent then L[#L+1]=p end
+				local ok=1
+				if md=='Team'or md=='Both'then local tm=p.Team if not(tm and tm.Name=='생존자')then ok=nil end end
+				if ok then
+					local hd=uX5bC(c)
+					if hd and hd.Parent then
+						if md=='Height'or md=='Both'then
+							local rp=nil
+							for _,v in ipairs(c:GetChildren())do if v.Name=='HumanoidRootPart'and v:IsA'BasePart'then rp=v break end end
+							local y=rp and rp.Position.Y or -1/0
+							if y>my then my=y mp=p end
+						else
+							L[#L+1]=p
+						end
+					end
+				end
 			end
 		end
 	end
-	if #L<1 then if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end return end
-	local np=L[math.random(#L)]
-	if not np then
-		if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end
-		return
-	end
-	if not np then
-		if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end
-		return
-	end
-	if kM8qT~=np then
-		if kM8qT then zQ3aS(kM8qT) end
-		kM8qT=np
-		lQ3wE=nil
-	end
+	local np=mp or(#L>0 and L[math.random(#L)]or nil)
+	if not np then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
+	if kM8qT~=np then if kM8qT then zQ3aS(kM8qT)end kM8qT=np lQ3wE=nil end
 	local c=np.Character
-	if not c then if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end return end
+	if not c then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
 	local hd=uX5bC(c)
-	if not hd or not hd.Parent then if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end return end
+	if not hd or not hd.Parent then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
 	eJ3sW[np]=yZ6aD(c,hd,eJ3sW[np])
 	if not gR1cU or not gR1cU.Parent then return end
 	local base=gR1cU.CFrame*CFrame.new(0,-1,1)
