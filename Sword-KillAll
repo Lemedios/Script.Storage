@@ -1,4 +1,5 @@
 local aB3dE,bT2xK,cL9pR=game:service'Players',game:service'RunService',game:service'CoreGui'
+local dE4fG=game:service'UserInputService'
 local dV6nH=aB3dE.LocalPlayer
 local eJ3sW,fY8kP,gR1cU,hN2mQ={}, {}, nil, false
 local iP4sT,jK7uL,kM8qT,lQ3wE=nil,nil,nil,nil
@@ -39,8 +40,9 @@ qW8cS.Transparency=.35
 qW8cS.Color=Color3.fromRGB(255,255,255)
 qW8cS.Parent=pD9hV
 
-local rQ1wE={'Team','Height','Both','None'}
+local rQ1wE={'Team','Height','Both','None','Select'}
 local sV2xK=4
+local xY7zA,yM2nP,zR3tU=nil,{},{}
 local tB3nM=Instance.new('Frame')
 tB3nM.Size=UDim2.new(0,150,0,46)
 tB3nM.Position=UDim2.new(0,12,1,-108)
@@ -74,8 +76,11 @@ wF6qT.Transparency=.35
 wF6qT.Color=Color3.fromRGB(255,255,255)
 wF6qT.Parent=vD5pS
 vD5pS.MouseButton1Click:Connect(function()
-	sV2xK=sV2xK%4+1
-	vD5pS.Text=rQ1wE[sV2xK]
+	local a=rQ1wE[sV2xK]
+	sV2xK=sV2xK%5+1
+	local b=rQ1wE[sV2xK]
+	vD5pS.Text=b
+	if a=='Select'and b~='Select'then yM2nP={} for _,h in pairs(zR3tU)do h:Destroy()end zR3tU={} end
 end)
 
 local function rP2vN(p)while p do if p.ClassName=='Accessory'then return 1 end p=p.Parent end end
@@ -89,6 +94,16 @@ local function wJ7nL()
 		local n=v.Name
 		if (n=='RightHand'or n=='RightLowerArm'or n=='RightUpperArm'or n=='Right Arm')and v:IsA'BasePart'then gR1cU=v return end
 	end
+end
+
+local function A9kLm(p)
+	if not p then for _,h in pairs(zR3tU)do h:Destroy()end zR3tU={} return end
+	local u=p.UserId
+	local c=p.Character
+	if not c then return end
+	local h=zR3tU[u]
+	if not h then h=Instance.new('Highlight')h.FillTransparency=1 h.OutlineColor=Color3.new(1,0,0)h.Parent=cL9pR zR3tU[u]=h end
+	h.Adornee=c
 end
 
 local zQ3aS
@@ -105,11 +120,20 @@ local function xT7rW(p)
 	p.CharacterAdded:Connect(function()
 		fY8kP[p]=os.clock()
 		if kM8qT==p then kM8qT=nil lQ3wE=nil end
+		if yM2nP[p.UserId]then A9kLm(p)end
 	end)
 end
 for _,p in ipairs(aB3dE:GetPlayers())do if p~=dV6nH then xT7rW(p)end end
-aB3dE.PlayerAdded:Connect(function(p)if p~=dV6nH then xT7rW(p)end end)
-aB3dE.PlayerRemoving:Connect(function(p)fY8kP[p]=nil if eJ3sW[p]then eJ3sW[p]=nil end if kM8qT==p then kM8qT=nil lQ3wE=nil end end)
+aB3dE.PlayerAdded:Connect(function(p)
+	if p~=dV6nH then xT7rW(p)end
+	if yM2nP and p.UserId==yM2nP then A9kLm(p)end
+end)
+aB3dE.PlayerRemoving:Connect(function(p)
+	fY8kP[p]=nil
+	if eJ3sW[p]then eJ3sW[p]=nil end
+	if kM8qT==p then kM8qT=nil lQ3wE=nil end
+	if yM2nP[p.UserId]then yM2nP[p.UserId]=nil local h=zR3tU[p.UserId] if h then h:Destroy()zR3tU[p.UserId]=nil end end
+end)
 
 local function yZ6aD(c,hd,t)
 	t=t or{[0]={}}
@@ -156,35 +180,91 @@ dV6nH.CharacterAdded:Connect(function(c)
 end)
 if dV6nH.Character then wJ7nL()end
 
-local function A1b2C()
-	if not hN2mQ then return end
-	if not gR1cU or not gR1cU.Parent then wJ7nL()end
-	local md=rQ1wE[sV2xK]
-	local L,mp,my={},nil,-1/0
-	for p,t0 in pairs(fY8kP)do
-		local c=p.Character
-		if c and os.clock()-t0>0.1 and not tX7rW(c)then
-			local h=sV4kZ(c)
-			if h and h.Health>0 then
-				local ok=1
-				if md=='Team'or md=='Both'then local tm=p.Team if not(tm and tm.Name=='생존자')then ok=nil end end
-				if ok then
-					local hd=uX5bC(c)
-					if hd and hd.Parent then
-						if md=='Height'or md=='Both'then
-							local rp=nil
-							for _,v in ipairs(c:GetChildren())do if v.Name=='HumanoidRootPart'and v:IsA'BasePart'then rp=v break end end
-							local y=rp and rp.Position.Y or -1/0
-							if y>my then my=y mp=p end
-						else
-							L[#L+1]=p
-						end
+xY7zA=dE4fG.InputBegan:Connect(function(i,g)
+	if g or i.KeyCode~=Enum.KeyCode.H or rQ1wE[sV2xK]~='Select'then return end
+	local cam=workspace.CurrentCamera
+	if not cam then return end
+	local mp=dE4fG:GetMouseLocation()
+	local bd,bp=1/0,nil
+	for _,p in ipairs(aB3dE:GetPlayers())do
+		if p~=dV6nH then
+			local c=p.Character
+			if c then
+				local rp=nil
+				for _,v in ipairs(c:GetChildren())do if v.Name=='HumanoidRootPart'and v:IsA'BasePart'then rp=v break end end
+				if rp then
+					local v2,on=cam:WorldToViewportPoint(rp.Position)
+					if on then
+						local dx,dy=v2.X-mp.X,v2.Y-mp.Y
+						local d=dx*dx+dy*dy
+						if d<bd then bd=d bp=p end
 					end
 				end
 			end
 		end
 	end
-	local np=mp or(#L>0 and L[math.random(#L)]or nil)
+	if bp then
+	local u=bp.UserId
+	if yM2nP[u]then
+		yM2nP[u]=nil
+		local h=zR3tU[u]
+		if h then h:Destroy()zR3tU[u]=nil end
+	else
+		yM2nP[u]=1
+		A9kLm(bp)
+	end
+end
+end)
+
+local function A1b2C()
+	if not hN2mQ then return end
+	if not gR1cU or not gR1cU.Parent then wJ7nL()end
+	local md=rQ1wE[sV2xK]
+	local np=nil
+	if md=='Select'then
+		local L={}
+		for _,p in ipairs(aB3dE:GetPlayers())do
+			if p~=dV6nH and yM2nP[p.UserId]then
+				local t0=fY8kP[p]
+				local c=p.Character
+				if t0 and c and os.clock()-t0>0.1 and not tX7rW(c)then
+					local h=sV4kZ(c)
+					if h and h.Health>0 then
+						local hd=uX5bC(c)
+						if hd and hd.Parent then L[#L+1]=p end
+					end
+				end
+			end
+		end
+		np=#L>0 and L[math.random(#L)]or nil
+		if not np then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
+	else
+		local L,mp,my={},nil,-1/0
+		for p,t0 in pairs(fY8kP)do
+			local c=p.Character
+			if c and os.clock()-t0>0.1 and not tX7rW(c)then
+				local h=sV4kZ(c)
+				if h and h.Health>0 then
+					local ok=1
+					if md=='Team'or md=='Both'then local tm=p.Team if not(tm and tm.Name=='생존자')then ok=nil end end
+					if ok then
+						local hd=uX5bC(c)
+						if hd and hd.Parent then
+							if md=='Height'or md=='Both'then
+								local rp=nil
+								for _,v in ipairs(c:GetChildren())do if v.Name=='HumanoidRootPart'and v:IsA'BasePart'then rp=v break end end
+								local y=rp and rp.Position.Y or -1/0
+								if y>my then my=y mp=p end
+							else
+								L[#L+1]=p
+							end
+						end
+					end
+				end
+			end
+		end
+		np=mp or(#L>0 and L[math.random(#L)]or nil)
+	end
 	if not np then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
 	if kM8qT~=np then if kM8qT then zQ3aS(kM8qT)end kM8qT=np lQ3wE=nil end
 	local c=np.Character
@@ -199,6 +279,7 @@ local function A1b2C()
 	hd.Velocity=Vector3.new(0,1)
 	hd.RotVelocity=Vector3.new()
 	lQ3wE=hd
+	if md=='Select'and np then A9kLm(np)end
 end
 
 local function D3e4F()
