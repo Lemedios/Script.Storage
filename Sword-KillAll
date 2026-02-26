@@ -52,6 +52,8 @@ local function wJ7nL()
 	end
 end
 
+local zQ3aS
+
 local function xT7rW(p)
 	fY8kP[p]=os.clock()
 	p.AncestryChanged:Connect(function(_,pp)
@@ -83,7 +85,7 @@ local function yZ6aD(c,hd,t)
 	end
 	return t
 end
-local function zQ3aS(p)
+zQ3aS=function(p)
 	local t=eJ3sW[p]
 	if not t then return end
 	for i=1,#t do
@@ -117,7 +119,12 @@ local function A1b2C()
 			end
 		end
 	end
+	if #L<1 then if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end return end
 	local np=L[math.random(#L)]
+	if not np then
+		if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end
+		return
+	end
 	if not np then
 		if kM8qT then zQ3aS(kM8qT) kM8qT=nil lQ3wE=nil end
 		return
