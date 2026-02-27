@@ -126,13 +126,14 @@ end
 for _,p in ipairs(aB3dE:GetPlayers())do if p~=dV6nH then xT7rW(p)end end
 aB3dE.PlayerAdded:Connect(function(p)
 	if p~=dV6nH then xT7rW(p)end
-	if yM2nP and p.UserId==yM2nP then A9kLm(p)end
+	if yM2nP[p.UserId]then A9kLm(p)end
 end)
 aB3dE.PlayerRemoving:Connect(function(p)
 	fY8kP[p]=nil
 	if eJ3sW[p]then eJ3sW[p]=nil end
 	if kM8qT==p then kM8qT=nil lQ3wE=nil end
-	if yM2nP[p.UserId]then yM2nP[p.UserId]=nil local h=zR3tU[p.UserId] if h then h:Destroy()zR3tU[p.UserId]=nil end end
+	local h=zR3tU[p.UserId]
+	if h then h.Adornee=nil end
 end)
 
 local function yZ6aD(c,hd,t)
