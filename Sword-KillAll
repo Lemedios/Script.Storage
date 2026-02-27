@@ -274,7 +274,7 @@ local function A1b2C()
 	if not hd or not hd.Parent then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
 	eJ3sW[np]=yZ6aD(c,hd,eJ3sW[np])
 	if not gR1cU or not gR1cU.Parent then return end
-	local base=gR1cU.CFrame*CFrame.new(0,-1,1)
+	local base=gR1cU.CFrame*CFrame.new(0,-1,0)
 	local rx,ry,rz=math.rad(math.random(-180,180)),math.rad(math.random(-180,180)),math.rad(math.random(-180,180))
 	hd.CFrame=base*CFrame.Angles(rx,ry,rz)
 	hd.Velocity=Vector3.new(0,1)
