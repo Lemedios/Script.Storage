@@ -40,7 +40,7 @@ qW8cS.Transparency=.35
 qW8cS.Color=Color3.fromRGB(255,255,255)
 qW8cS.Parent=pD9hV
 
-local rQ1wE={'Team','Height','Both','None','Select'}
+local rQ1wE={'Team','Height','-Height','Both','-Both','None','Select'}
 local sV2xK=4
 local xY7zA,yM2nP,zR3tU=nil,{},{}
 local tB3nM=Instance.new('Frame')
@@ -77,7 +77,7 @@ wF6qT.Color=Color3.fromRGB(255,255,255)
 wF6qT.Parent=vD5pS
 vD5pS.MouseButton1Click:Connect(function()
 	local a=rQ1wE[sV2xK]
-	sV2xK=sV2xK%5+1
+	sV2xK=sV2xK%7+1
 	local b=rQ1wE[sV2xK]
 	vD5pS.Text=b
 	if a=='Select'and b~='Select'then yM2nP={} for _,h in pairs(zR3tU)do h:Destroy()end zR3tU={} end
@@ -240,22 +240,22 @@ local function A1b2C()
 		np=#L>0 and L[math.random(#L)]or nil
 		if not np then if kM8qT then zQ3aS(kM8qT)kM8qT=nil lQ3wE=nil end return end
 	else
-		local L,mp,my={},nil,-1/0
+		local L,mp,my={},nil,((md=='-Height'or md=='-Both')and 1/0 or -1/0)
 		for p,t0 in pairs(fY8kP)do
 			local c=p.Character
 			if c and os.clock()-t0>0.1 and not tX7rW(c)then
 				local h=sV4kZ(c)
 				if h and h.Health>0 then
 					local ok=1
-					if md=='Team'or md=='Both'then local tm=p.Team if not(tm and tm.Name=='생존자')then ok=nil end end
+					if md=='Team'or md=='Both'or md=='-Both'then local tm=p.Team if not(tm and tm.Name=='생존자')then ok=nil end end
 					if ok then
 						local hd=uX5bC(c)
 						if hd and hd.Parent then
-							if md=='Height'or md=='Both'then
+							if md=='Height'or md=='Both'or md=='-Height'or md=='-Both'then
 								local rp=nil
 								for _,v in ipairs(c:GetChildren())do if v.Name=='HumanoidRootPart'and v:IsA'BasePart'then rp=v break end end
-								local y=rp and rp.Position.Y or -1/0
-								if y>my then my=y mp=p end
+								local y=rp and rp.Position.Y or((md=='-Height'or md=='-Both')and 1/0 or -1/0)
+								if md=='-Height'or md=='-Both'then if y<my then my=y mp=p end else if y>my then my=y mp=p end end
 							else
 								L[#L+1]=p
 							end
