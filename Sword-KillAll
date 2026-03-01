@@ -40,8 +40,8 @@ qW8cS.Transparency=.35
 qW8cS.Color=Color3.fromRGB(255,255,255)
 qW8cS.Parent=pD9hV
 
-local rQ1wE={'Team','Height','-Height','Both','-Both','None','Select'}
-local sV2xK=4
+local rQ1wE={'None','Select','Team','Height','-Height','Both','-Both'}
+local sV2xK=1
 local xY7zA,yM2nP,zR3tU=nil,{},{}
 local tB3nM=Instance.new('Frame')
 tB3nM.Size=UDim2.new(0,150,0,46)
