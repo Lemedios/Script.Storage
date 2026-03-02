@@ -1,0 +1,69 @@
+local aB3dE,cD4fG=game:service'Players'.LocalPlayer,game:service'UserInputService'
+local eH5iJ,kL6mN,oP7qR,sT8uV,uV9wX=nil,{},true,false,'시작까지: 2초'
+local pQ4rS=nil
+local fG6tY,gR1cU,hT2uV=nil,nil,nil
+local jK8lM=Vector3.new(0,600,-500)
+local lM6nO=CFrame.new(0,600,-500)
+local function nO1pQ(rS2tU)kL6mN[#kL6mN+1]=rS2tU end
+local function vW3xY()for _,v in ipairs(kL6mN)do pcall(function()v:Disconnect()end)end table.clear(kL6mN)end
+local function zA4bC()if gR1cU then gR1cU:Destroy()gR1cU=nil end if hT2uV then hT2uV:Destroy()hT2uV=nil end if fG6tY then fG6tY:Destroy()fG6tY=nil end end
+local function D5eF()if not(oP7qR and eH5iJ)then return end eH5iJ:ChangeState(Enum.HumanoidStateType.Dead)end
+local function G6hI(J7kL)
+	if not(oP7qR and J7kL and J7kL:IsA'TextLabel')then return end
+	if J7kL.Text==uV9wX then D5eF() end
+	nO1pQ(J7kL:GetPropertyChangedSignal'Text':Connect(function()if oP7qR and J7kL.Text==uV9wX then D5eF() end end))
+end
+local function M8nO(P9qR)
+	for _,v in ipairs(P9qR:GetChildren())do if v.Name=='TextLabel' then G6hI(v) end end
+	nO1pQ(P9qR.ChildAdded:Connect(function(v)if v.Name=='TextLabel' then G6hI(v) end end))
+end
+local function S0tU(V1wX)
+	for _,v in ipairs(V1wX:GetChildren())do if v.Name=='ScreenGui' then M8nO(v) end end
+	nO1pQ(V1wX.ChildAdded:Connect(function(v)if v.Name=='ScreenGui' then M8nO(v) end end))
+end
+local function Y2zA(bC3dE)
+	zA4bC()
+	if not(sT8uV and bC3dE)then return end
+	local eF4gH=Instance.new'Attachment'
+	eF4gH.Parent=bC3dE
+	local iJ5kL=Instance.new'AlignPosition'
+	iJ5kL.MaxForce=1/0
+	iJ5kL.Responsiveness=1/0
+	iJ5kL.Mode=Enum.PositionAlignmentMode.OneAttachment
+	iJ5kL.Attachment0=eF4gH
+	iJ5kL.Position=jK8lM
+	iJ5kL.Parent=bC3dE
+	local mN6oP=Instance.new'AlignOrientation'
+	mN6oP.MaxTorque=1/0
+	mN6oP.Responsiveness=1/0
+	mN6oP.Mode=Enum.OrientationAlignmentMode.OneAttachment
+	mN6oP.Attachment0=eF4gH
+	mN6oP.CFrame=lM6nO
+	mN6oP.Parent=bC3dE
+	fG6tY,gR1cU,hT2uV=eF4gH,iJ5kL,mN6oP
+end
+local function qR7sT(uV8wX)
+	eH5iJ=nil pQ4rS=nil
+	for _,v in ipairs(uV8wX:GetChildren())do
+		if v.Name=='Humanoid' then eH5iJ=v elseif v.Name=='HumanoidRootPart' then pQ4rS=v end
+	end
+	if sT8uV and pQ4rS then Y2zA(pQ4rS) end
+	nO1pQ(uV8wX.ChildAdded:Connect(function(v)
+		if v.Name=='Humanoid' then eH5iJ=v
+		elseif v.Name=='HumanoidRootPart' then pQ4rS=v if sT8uV then Y2zA(v) end
+		end
+	end))
+end
+if aB3dE.Character then qR7sT(aB3dE.Character) end
+nO1pQ(aB3dE.CharacterAdded:Connect(qR7sT))
+S0tU(aB3dE.PlayerGui)
+nO1pQ(cD4fG.InputBegan:Connect(function(i,p)
+	if p or not oP7qR then return end
+	local k=i.KeyCode
+	if k==Enum.KeyCode.G then
+		oP7qR=false sT8uV=false zA4bC() vW3xY()
+	elseif k==Enum.KeyCode.T then
+		sT8uV=not sT8uV
+		if not sT8uV then zA4bC() elseif pQ4rS then Y2zA(pQ4rS) end
+	end
+end))
