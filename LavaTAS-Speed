@@ -108,7 +108,12 @@ v30=v2.Heartbeat:Connect(function(v41)
 	if v34 and v28 and v28.Parent then
 		local v46=(v35==Enum.HumanoidStateType.Freefall.Value or v35==Enum.HumanoidStateType.Climbing.Value or v35==Enum.HumanoidStateType.Swimming.Value) and 3.5 or -3.5
 		v34.CFrame=v28.CFrame*CFrame.new(0,v46,0)
-		v34.Velocity=v28.Velocity
-		v34.RotVelocity=v28.RotVelocity
+		if v35==Enum.HumanoidStateType.Running.Value then
+			v34.Velocity=Vector3.new()
+			v34.RotVelocity=v28.RotVelocity
+		else
+			v34.Velocity=v28.Velocity
+			v34.RotVelocity=v28.RotVelocity
+		end
 	end
 end)
