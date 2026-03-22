@@ -1,0 +1,6 @@
+local a=game.Players.LocalPlayer.PlayerScripts
+for _,b in ipairs(a:GetChildren())do
+	if b:IsA'LocalScript'and(b.Name=='Swim'or b.Name=='fly'or b.Name=='jump')then
+		b:Destroy()
+	end
+end
